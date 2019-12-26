@@ -26,9 +26,9 @@ def load_image(name, color_key=-1):
 
     if color_key is not None:
         if color_key == -1:
-            if name == '1.png' or name == '2.png':
+            if name != 'bckgrd.png':
                 color_key = image.get_at((0, 0))
-                image.set_colorkey(color_key)
+                image.set_colorkey(pygame.Color('white'))
         else:
             image = image.convert_alpha()
     return image
@@ -46,7 +46,8 @@ def start_screen():
                   "Пролетайте между колоннами и не врезайтесь!",
                   "Нажмите любую кнопку, чтобы начать."]
 
-    fon = pygame.transform.scale(load_image('bckgrd.png'), (width, height))
+    fon = pygame.transform.scale(load_image('bckgrd.png'), (width * 3,
+                                                            height))
     screen.blit(fon, (0, 0))
     font = pygame.font.Font(None, 30)
     text_coord = 50
@@ -71,13 +72,19 @@ def start_screen():
 
 
 class Fon(pygame.sprite.Sprite):
-    image = pygame.transform.scale(load_image('bckgrd.png'), (width, height))
+    image = pygame.transform.scale(load_image('bckgrd.png'), (width * 3,
+                                                              height))
 
     def __init__(self, group):
         super().__init__(group)
         self.image = Fon.image
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = 0, 0
+
+    def update(self):
+        self.rect.x -= 1
+        if self.rect.x == -width * 2:
+            self.rect.x = 0
 
 
 class Bird(pygame.sprite.Sprite):
@@ -91,8 +98,8 @@ class Bird(pygame.sprite.Sprite):
         self.rect.x, self.rect.y = width // 2 - 30, height // 2 - 25
         self.dir = 1
 
-    # def update(self, *args):
-        # self.rect.x += 1
+    def update(self):
+        pass
 
 
 class Column(pygame.sprite.Sprite):
@@ -102,14 +109,14 @@ class Column(pygame.sprite.Sprite):
         super().__init__(group)
         self.image = Column.cl
         self.rect = self.image.get_rect()
-        self.rect.x, self.rect.y = width, -200 + random.randint(-199, 199)
+        self.rect.x, self.rect.y = width, -200 + random.randint(-179, 179)
 
     def update(self, *args):
-        self.rect.x -= 1
+        self.rect.x -= 2
 
 
 Bird(player)
-Fon(fon)
+back = Fon(fon)
 cl = Column(cls)
 start_screen()
 
@@ -122,12 +129,13 @@ while running:
     screen.fill(pygame.Color('black'))
     if cl.rect.x < width / 2:
         cl = Column(cls)
+    fon.update()
     fon.draw(screen)
     player.draw(screen)
     cls.draw(screen)
     player.update()
     cls.update()
     pygame.display.flip()
-    clock.tick(100)
+    clock.tick(75)
 
 terminate()
