@@ -1,6 +1,7 @@
 import os
 import sys
 import pygame
+import random
 
 pygame.init()
 pygame.key.set_repeat(200, 70)
@@ -12,6 +13,7 @@ FPS = 50
 STEP = 10
 player = pygame.sprite.Group()
 fon = pygame.sprite.Group()
+cls = pygame.sprite.Group()
 
 
 def load_image(name, color_key=-1):
@@ -89,12 +91,26 @@ class Bird(pygame.sprite.Sprite):
         self.rect.x, self.rect.y = width // 2 - 30, height // 2 - 25
         self.dir = 1
 
+    # def update(self, *args):
+        # self.rect.x += 1
+
+
+class Column(pygame.sprite.Sprite):
+    cl = load_image('cl.png')
+
+    def __init__(self, group):
+        super().__init__(group)
+        self.image = Column.cl
+        self.rect = self.image.get_rect()
+        self.rect.x, self.rect.y = width, -200 + random.randint(-199, 199)
+
     def update(self, *args):
-        self.rect.x += 1
+        self.rect.x -= 1
 
 
 Bird(player)
 Fon(fon)
+cl = Column(cls)
 start_screen()
 
 
@@ -104,9 +120,13 @@ while running:
         if event.type == pygame.QUIT:
             running = False
     screen.fill(pygame.Color('black'))
+    if cl.rect.x < width / 2:
+        cl = Column(cls)
     fon.draw(screen)
     player.draw(screen)
+    cls.draw(screen)
     player.update()
+    cls.update()
     pygame.display.flip()
     clock.tick(100)
 
