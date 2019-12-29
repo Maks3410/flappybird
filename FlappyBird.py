@@ -73,6 +73,7 @@ def start_screen():
 class Fon(pygame.sprite.Sprite):
     image = pygame.transform.scale(load_image('bckgrd.png'), (width * 3,
                                                               height))
+    speed = 1
 
     def __init__(self, group):
         super().__init__(group)
@@ -81,7 +82,7 @@ class Fon(pygame.sprite.Sprite):
         self.rect.x, self.rect.y = 0, 0
 
     def update(self):
-        self.rect.x -= 1
+        self.rect.x -= Fon.speed
         if self.rect.x == -width * 2:
             self.rect.x = 0
 
@@ -89,32 +90,50 @@ class Fon(pygame.sprite.Sprite):
 class Bird(pygame.sprite.Sprite):
     image1 = load_image('1.png')
     image2 = load_image('2.png')
+    f_speed = 2
+    jump_flag = True
 
     def __init__(self, group):
         super().__init__(group)
         self.image = Bird.image1
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = width // 2 - 30, height // 2 - 25
+        self.mask = pygame.mask.from_surface(self.image)
         self.dir = 1
 
     def update(self):
-        pass
+        if self.rect.y + 50 < height:
+            self.rect.y += Bird.f_speed
+
+    def jump(self):
+        if Bird.jump_flag is True:
+            Bird.f_speed = 0
+            for i in range(50):
+                self.rect.y -= 1
+            Bird.f_speed = 2
 
 
 class Column(pygame.sprite.Sprite):
     cl = load_image('cl.png')
+    speed = 2
 
     def __init__(self, group):
         super().__init__(group)
         self.image = Column.cl
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = width, -200 + random.randint(-179, 179)
+        self.mask = pygame.mask.from_surface(self.image)
 
     def update(self, *args):
-        self.rect.x -= 2
+        self.rect.x -= Column.speed
+        if pygame.sprite.collide_mask(self, bird):
+            Column.speed = 0
+            Fon.speed = 0
+            Bird.f_speed = 0
+            Bird.jump_flag = False
 
 
-Bird(player)
+bird = Bird(player)
 back = Fon(fon)
 cl = Column(cls)
 start_screen()
@@ -125,15 +144,18 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                bird.jump()
     screen.fill(pygame.Color('black'))
     if cl.rect.x < width / 2:
         cl = Column(cls)
     fon.update()
     fon.draw(screen)
-    player.draw(screen)
-    cls.draw(screen)
     player.update()
+    player.draw(screen)
     cls.update()
+    cls.draw(screen)
     pygame.display.flip()
     clock.tick(75)
 
