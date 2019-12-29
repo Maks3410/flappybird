@@ -4,7 +4,6 @@ import pygame
 import random
 
 pygame.init()
-pygame.key.set_repeat(200, 70)
 clock = pygame.time.Clock()
 
 size = width, height = 700, 500
@@ -92,6 +91,7 @@ class Bird(pygame.sprite.Sprite):
     image2 = load_image('2.png')
     f_speed = 2
     jump_flag = True
+    dir_speed = 1
 
     def __init__(self, group):
         super().__init__(group)
@@ -104,6 +104,11 @@ class Bird(pygame.sprite.Sprite):
     def update(self):
         if self.rect.y + 50 < height:
             self.rect.y += Bird.f_speed
+            if self.dir % 30 == 0:
+                self.image = Bird.image2
+            elif self.dir % 15 == 0:
+                self.image = Bird.image1
+            self.dir += Bird.dir_speed
 
     def jump(self):
         if Bird.jump_flag is True:
@@ -131,6 +136,7 @@ class Column(pygame.sprite.Sprite):
             Fon.speed = 0
             Bird.f_speed = 0
             Bird.jump_flag = False
+            Bird.dir_speed = 0
 
 
 bird = Bird(player)
