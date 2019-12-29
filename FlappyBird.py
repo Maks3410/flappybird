@@ -4,7 +4,6 @@ import pygame
 import random
 
 pygame.init()
-pygame.key.set_repeat(200, 70)
 clock = pygame.time.Clock()
 
 size = width, height = 700, 500
