@@ -8,7 +8,7 @@ clock = pygame.time.Clock()
 
 size = width, height = 700, 500
 screen = pygame.display.set_mode(size)
-FPS = 50
+FPS = 75
 STEP = 10
 score = 0
 player = pygame.sprite.Group()
@@ -90,7 +90,7 @@ class Fon(pygame.sprite.Sprite):
 class Bird(pygame.sprite.Sprite):
     image1 = load_image('1.png')
     image2 = load_image('2.png')
-    speed = 2
+    speed = 4
     jump_flag = True
     up_flag = False
     dir_speed = 1
@@ -102,30 +102,36 @@ class Bird(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = width // 2 - 30, height // 2 - 25
         self.mask = pygame.mask.from_surface(self.image)
-        self.dir = 1
+        self.dir = 0
 
     def update(self):
         if self.rect.y + 50 < height:
             self.rect.y += Bird.speed
             if self.num == 12:
-                Bird.speed = 2
+                Bird.speed = 0
+            elif self.num == 22:
+                Bird.speed = 4
             self.num += 1
-        if self.dir % 30 == 0:
-            self.image = Bird.image2
-        elif self.dir % 15 == 0:
-            self.image = Bird.image1
-        self.dir += Bird.dir_speed
+            if self.dir % 30 == 0:
+                self.image = Bird.image2
+            elif self.dir % 15 == 0:
+                self.image = Bird.image1
+            self.dir += Bird.dir_speed
+        else:
+            Column.flag = False
 
     def jump(self):
         if Bird.jump_flag is True:
             Bird.up_flag = True
             Bird.speed = -5
             self.num = 0
+            self.dir = 0
 
 
 class Column(pygame.sprite.Sprite):
     cl = load_image('cl.png')
     speed = 2
+    flag = True
 
     def __init__(self, group):
         super().__init__(group)
@@ -136,7 +142,7 @@ class Column(pygame.sprite.Sprite):
 
     def update(self, *args):
         self.rect.x -= Column.speed
-        if pygame.sprite.collide_mask(self, bird):
+        if pygame.sprite.collide_mask(self, bird) or Column.flag is False:
             Column.speed = 0
             Fon.speed = 0
             Bird.speed = 0
@@ -169,6 +175,6 @@ while running:
     cls.update()
     cls.draw(screen)
     pygame.display.flip()
-    clock.tick(75)
+    clock.tick(FPS)
 
 terminate()
