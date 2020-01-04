@@ -16,20 +16,18 @@ fon = pygame.sprite.Group()
 cls = pygame.sprite.Group()
 
 
-def load_image(name, color_key=-1):
+def load_image(name):
     fullname = os.path.join('data', name)
     try:
-        image = pygame.image.load(fullname).convert()
+        image = pygame.image.load(fullname)
+        if name.endswith(".png"):
+            image = image.convert_alpha()
+        else:
+            image = image.convert()
     except pygame.error as message:
         print('Cannot load image:', name)
         raise SystemExit(message)
 
-    if color_key is not None:
-        if color_key == -1:
-            if name != 'bckgrd.png':
-                image.set_colorkey(pygame.Color('white'))
-        else:
-            image = image.convert_alpha()
     return image
 
 
@@ -88,21 +86,31 @@ class Fon(pygame.sprite.Sprite):
 
 
 class Bird(pygame.sprite.Sprite):
-    image1 = load_image('1.png')
-    image2 = load_image('2.png')
     speed = 2
     jump_flag = True
     up_flag = False
     dir_speed = 1
 
-    def __init__(self, group):
+    def __init__(self, group, sheet, columns, rows, x, y):
         super().__init__(group)
-        self.image = Bird.image1
+        self.frames = []
+        self.cut_sheet(sheet, columns, rows)
+        self.cur_frame = 0
         self.num = 0
-        self.rect = self.image.get_rect()
-        self.rect.x, self.rect.y = width // 2 - 30, height // 2 - 25
+        self.image = self.frames[self.cur_frame]
+        self.rect = self.rect.move(x, y)
         self.mask = pygame.mask.from_surface(self.image)
         self.dir = 1
+        self.k = 1
+
+    def cut_sheet(self, sheet, columns, rows):
+        self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
+                                sheet.get_height() // rows)
+        for j in range(rows):
+            for i in range(columns):
+                frame_location = (self.rect.w * i, self.rect.h * j)
+                self.frames.append(sheet.subsurface(pygame.Rect(
+                    frame_location, self.rect.size)))
 
     def update(self):
         if self.rect.y + 50 < height:
@@ -110,11 +118,9 @@ class Bird(pygame.sprite.Sprite):
             if self.num == 12:
                 Bird.speed = 2
             self.num += 1
-        if self.dir % 30 == 0:
-            self.image = Bird.image2
-        elif self.dir % 15 == 0:
-            self.image = Bird.image1
-        self.dir += Bird.dir_speed
+            self.k += 0.1
+            self.cur_frame = (round(self.k)) % len(self.frames)
+            self.image = self.frames[self.cur_frame]
 
     def jump(self):
         if Bird.jump_flag is True:
@@ -144,7 +150,8 @@ class Column(pygame.sprite.Sprite):
             Bird.dir_speed = 0
 
 
-bird = Bird(player)
+bird = Bird(player, load_image("bird_sheet5x1.png"), 5, 1, width // 2,
+            height // 2)
 back = Fon(fon)
 cl = Column(cls)
 start_screen()
