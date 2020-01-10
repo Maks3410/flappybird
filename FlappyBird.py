@@ -122,6 +122,12 @@ class Bird(pygame.sprite.Sprite):
                 self.k += 0.1
                 self.cur_frame = (round(self.k)) % len(self.frames)
                 self.image = self.frames[self.cur_frame]
+            else:
+                Column.speed = 0
+                Fon.speed = 0
+                Bird.speed = 0
+                Bird.jump_flag = False
+                Bird.dir_speed = 0
 
     def jump(self):
         if Bird.jump_flag is True:
