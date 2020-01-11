@@ -14,6 +14,7 @@ score = 0
 player = pygame.sprite.Group()
 fon = pygame.sprite.Group()
 cls = pygame.sprite.Group()
+running = True
 
 
 def load_image(name):
@@ -61,9 +62,33 @@ def start_screen():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
-            elif event.type == pygame.KEYDOWN or event.type ==  \
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    terminate()
+            if event.type == pygame.KEYDOWN or event.type ==  \
                     pygame.MOUSEBUTTONDOWN:
-                return
+                        return
+        pygame.display.flip()
+        clock.tick(FPS)
+
+
+def end_screen():
+    global running
+
+    restart_btn = load_image('restart.png')
+    leave_btn = load_image('leave.png')
+
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    running = True
+                    return
+                elif event.key == pygame.K_ESCAPE:
+                    terminate()
         pygame.display.flip()
         clock.tick(FPS)
 
@@ -113,6 +138,7 @@ class Bird(pygame.sprite.Sprite):
                     frame_location, self.rect.size)))
 
     def update(self):
+        global running
         self.mask = pygame.mask.from_surface(self.image)
         if self.jump_flag:
             if self.rect.y + 50 < height:
@@ -128,6 +154,7 @@ class Bird(pygame.sprite.Sprite):
                 Bird.speed = 0
                 Bird.jump_flag = False
                 Bird.dir_speed = 0
+                running = False
 
     def jump(self):
         if Bird.jump_flag is True:
@@ -148,6 +175,7 @@ class Column(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
 
     def update(self, *args):
+        global running
         self.rect.x -= Column.speed
         if pygame.sprite.collide_mask(self, bird):
             Column.speed = 0
@@ -155,34 +183,53 @@ class Column(pygame.sprite.Sprite):
             Bird.speed = 0
             Bird.jump_flag = False
             Bird.dir_speed = 0
-
-
-bird = Bird(player, load_image("bird_sheet5x1.png"), 5, 1, width // 2,
-            height // 2)
-back = Fon(fon)
-cl = Column(cls)
-start_screen()
-
-
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
             running = False
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                bird.jump()
-    screen.fill(pygame.Color('black'))
-    if cl.rect.x < width / 2 - 130:
-        cl = Column(cls)
-        score += 1
-    fon.update()
-    fon.draw(screen)
-    player.update()
-    player.draw(screen)
-    cls.update()
-    cls.draw(screen)
-    pygame.display.flip()
-    clock.tick(75)
+
+
+def reset():
+    global player, fon, cls, bird, back, cl
+    player = pygame.sprite.Group()
+    fon = pygame.sprite.Group()
+    cls = pygame.sprite.Group()
+    bird = Bird(player, load_image("bird_sheet5x1.png"), 5, 1, width // 2,
+                height // 2)
+    back = Fon(fon)
+    cl = Column(cls)
+    Fon.speed = 1
+    Bird.speed = 1
+    Column.speed = 2
+    Bird.jump_flag = True
+
+
+start_screen()
+closed = False
+
+
+while not closed:
+    reset()
+
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    bird.jump()
+                if event.key == pygame.K_ESCAPE:
+                    terminate()
+        screen.fill(pygame.Color('black'))
+        if cl.rect.x < width / 2 - 130:
+            cl = Column(cls)
+            score += 1
+        fon.update()
+        fon.draw(screen)
+        player.update()
+        player.draw(screen)
+        cls.update()
+        cls.draw(screen)
+        pygame.display.flip()
+        clock.tick(75)
+
+    end_screen()
 
 terminate()
