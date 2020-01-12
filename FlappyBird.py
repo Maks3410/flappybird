@@ -14,6 +14,7 @@ score = 0
 player = pygame.sprite.Group()
 fon = pygame.sprite.Group()
 cls = pygame.sprite.Group()
+btns = pygame.sprite.Group()
 running = True
 
 
@@ -65,9 +66,9 @@ def start_screen():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     terminate()
-            if event.type == pygame.KEYDOWN or event.type ==  \
+            if event.type == pygame.KEYDOWN or event.type == \
                     pygame.MOUSEBUTTONDOWN:
-                        return
+                return
         pygame.display.flip()
         clock.tick(FPS)
 
@@ -75,9 +76,21 @@ def start_screen():
 def end_screen():
     global running
 
-    restart_btn = load_image('restart.png')
-    leave_btn = load_image('leave.png')
+    for x in btns:
+        x.kill()
+    restart_btn = pygame.sprite.Sprite(btns)
+    leave_btn = pygame.sprite.Sprite(btns)
 
+    restart_btn.image = load_image('restart.png')
+    leave_btn.image = load_image('leave.png')
+    restart_btn.rect = restart_btn.image.get_rect()
+    leave_btn.rect = leave_btn.image.get_rect()
+    restart_btn.rect.x = 420
+    restart_btn.rect.y = 12
+    leave_btn.rect.x = 560
+    leave_btn.rect.y = 12
+
+    btns.draw(screen)
 
     while True:
         for event in pygame.event.get():
@@ -88,6 +101,12 @@ def end_screen():
                     running = True
                     return
                 elif event.key == pygame.K_ESCAPE:
+                    terminate()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if (event.pos[0] >= 420 and event.pos[0] <= 548) and (event.pos[1] >= 12 and event.pos[1] <= 50):
+                    running = True
+                    return
+                elif (event.pos[0] >= 560 and event.pos[0] <= 688) and (event.pos[1] >= 12 and event.pos[1] <= 50):
                     terminate()
         pygame.display.flip()
         clock.tick(FPS)
@@ -201,9 +220,10 @@ def reset():
     Bird.jump_flag = True
 
 
+font = pygame.font.Font(None, 40)
+
 start_screen()
 closed = False
-
 
 while not closed:
     reset()
@@ -215,8 +235,6 @@ while not closed:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     bird.jump()
-                if event.key == pygame.K_ESCAPE:
-                    terminate()
         screen.fill(pygame.Color('black'))
         if cl.rect.x < width / 2 - 130:
             cl = Column(cls)
@@ -227,6 +245,12 @@ while not closed:
         player.draw(screen)
         cls.update()
         cls.draw(screen)
+        text = font.render("Score: {}".format(score), 1, (0, 0, 0))
+        text_x = 12
+        text_y = 12
+        text_w = text.get_width()
+        text_h = text.get_height()
+        screen.blit(text, (text_x, text_y))
         pygame.display.flip()
         clock.tick(75)
 
