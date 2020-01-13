@@ -97,18 +97,20 @@ def end_screen():
             if event.type == pygame.QUIT:
                 terminate()
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
+                if event.key == pygame.K_r:
                     running = True
                     return
                 elif event.key == pygame.K_ESCAPE:
                     terminate()
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if (420 <= event.pos[0] <= 548) and (12 <= event.pos[1] <= 50):
-                    running = True
-                    return
-                elif (560 <= event.pos[0] <= 688) and (12 <= event.pos[1] <=
-                                                       50):
-                    terminate()
+                if event.button == 1:
+                    if (420 <= event.pos[0] <= 548) and \
+                            (12 <= event.pos[1] <= 50):
+                        running = True
+                        return
+                    elif (560 <= event.pos[0] <= 688) and \
+                            (12 <= event.pos[1] <= 50):
+                        terminate()
         pygame.display.flip()
         clock.tick(FPS)
 
@@ -161,7 +163,7 @@ class Bird(pygame.sprite.Sprite):
         global running
         self.mask = pygame.mask.from_surface(self.image)
         if self.jump_flag:
-            if self.rect.y + 50 < height:
+            if 0 < self.rect.y + 50 < height:
                 self.rect.y += Bird.speed
                 Bird.speed += 0.1
                 self.num += 1
@@ -234,8 +236,11 @@ while not closed:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
-            if event.type == pygame.KEYDOWN:
+            elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
+                    bird.jump()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
                     bird.jump()
         screen.fill(pygame.Color('black'))
         if cl.rect.x < width / 2 - 130:
