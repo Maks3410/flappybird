@@ -103,10 +103,11 @@ def end_screen():
                 elif event.key == pygame.K_ESCAPE:
                     terminate()
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if (event.pos[0] >= 420 and event.pos[0] <= 548) and (event.pos[1] >= 12 and event.pos[1] <= 50):
+                if (420 <= event.pos[0] <= 548) and (12 <= event.pos[1] <= 50):
                     running = True
                     return
-                elif (event.pos[0] >= 560 and event.pos[0] <= 688) and (event.pos[1] >= 12 and event.pos[1] <= 50):
+                elif (560 <= event.pos[0] <= 688) and (12 <= event.pos[1] <=
+                                                       50):
                     terminate()
         pygame.display.flip()
         clock.tick(FPS)
@@ -206,7 +207,7 @@ class Column(pygame.sprite.Sprite):
 
 
 def reset():
-    global player, fon, cls, bird, back, cl
+    global player, fon, cls, bird, back, cl, score
     player = pygame.sprite.Group()
     fon = pygame.sprite.Group()
     cls = pygame.sprite.Group()
@@ -217,6 +218,7 @@ def reset():
     Fon.speed = 1
     Bird.speed = 1
     Column.speed = 2
+    score = 0
     Bird.jump_flag = True
 
 
