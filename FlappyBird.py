@@ -165,7 +165,7 @@ class Bird(pygame.sprite.Sprite):
         if self.jump_flag:
             if 0 < self.rect.y + 50 < height:
                 self.rect.y += Bird.speed
-                Bird.speed += 0.1
+                Bird.speed += 0.15
                 self.num += 1
                 self.k += 0.1
                 self.cur_frame = (round(self.k)) % len(self.frames)
@@ -181,7 +181,7 @@ class Bird(pygame.sprite.Sprite):
     def jump(self):
         if Bird.jump_flag is True:
             Bird.up_flag = True
-            Bird.speed = -3.5
+            Bird.speed = -4.5
             self.num = 0
 
 
