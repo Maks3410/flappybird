@@ -78,7 +78,8 @@ def start_screen():
 
 def end_screen():
     global running
-
+    cur.execute("""INSERT INTO score(score) VALUES(?)""", ([score]))
+    con.commit()
     for x in btns:
         x.kill()
     restart_btn = pygame.sprite.Sprite(btns)
@@ -264,7 +265,6 @@ while not closed:
         pygame.display.flip()
         clock.tick(75)
 
-    cur.execute('INSERT INTO score(score) VALUES(*)', score).fetchall()
     end_screen()
 
 terminate()
