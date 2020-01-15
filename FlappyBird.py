@@ -2,6 +2,7 @@ import os
 import sys
 import pygame
 import random
+import sqlite3
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -16,6 +17,8 @@ fon = pygame.sprite.Group()
 cls = pygame.sprite.Group()
 btns = pygame.sprite.Group()
 running = True
+con = sqlite3.connect("flappybird.db")
+cur = con.cursor()
 
 
 def load_image(name):
@@ -261,6 +264,7 @@ while not closed:
         pygame.display.flip()
         clock.tick(75)
 
+    cur.execute('INSERT INTO score(score) VALUES(*)', score).fetchall()
     end_screen()
 
 terminate()
