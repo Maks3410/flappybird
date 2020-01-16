@@ -19,6 +19,9 @@ btns = pygame.sprite.Group()
 running = True
 con = sqlite3.connect("flappybird.db")
 cur = con.cursor()
+pygame.mixer.music.load('data/AlanWalkerFaded.mp3')
+pygame.mixer.music.play(-1)
+pygame.mixer.music.set_volume(0.1)
 
 
 def load_image(name):
