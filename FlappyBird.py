@@ -22,6 +22,7 @@ cur = con.cursor()
 pygame.mixer.music.load('data/Summertime.mp3')
 pygame.mixer.music.play(-1)
 pygame.mixer.music.set_volume(0.1)
+bs = []
 
 
 def load_image(name):
@@ -45,8 +46,9 @@ def terminate():
 
 
 def start_screen():
+    global bs
     fon = pygame.transform.scale(load_image('start.jpg'), (width,
-                                                            height))
+                                                           height))
     screen.blit(fon, (0, 0))
 
     while True:
@@ -56,9 +58,16 @@ def start_screen():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     terminate()
-            if event.type == pygame.KEYDOWN or event.type == \
-                    pygame.MOUSEBUTTONDOWN:
-                return
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.pos[0] > 285 and event.pos[1] > 180 and event.pos[0] < 415 and event.pos[1] < 215:
+                    bs = (0.1, -3.5)
+                    return
+                elif event.pos[0] > 285 and event.pos[1] > 230 and event.pos[0] < 415 and event.pos[1] < 270:
+                    bs = (0.15, -4.5)
+                    return
+                elif event.pos[0] > 285 and event.pos[1] > 280 and event.pos[0] < 415 and event.pos[1] < 320:
+                    bs = (0.3, -6.6)
+                    return
         pygame.display.flip()
         clock.tick(FPS)
 
@@ -108,7 +117,7 @@ def end_screen():
 
 class Fon(pygame.sprite.Sprite):
     image = pygame.transform.scale(load_image('bckgrd.png'), (width * 3,
-                                                               height))
+                                                              height))
     speed = 1
     flag = True
 
@@ -138,7 +147,7 @@ class NightFon(pygame.sprite.Sprite):
 
     def update(self):
         if self.rect.y > 0:
-            self.rect.y -= 1
+            self.rect.y -= 3
         self.rect.x -= Fon.speed
         if self.rect.x == -width * 2:
             self.rect.x = 0
@@ -177,7 +186,7 @@ class Bird(pygame.sprite.Sprite):
         if self.jump_flag:
             if 0 < self.rect.y + 50 < height:
                 self.rect.y += Bird.speed
-                Bird.speed += 0.15
+                Bird.speed += bs[0]
                 self.num += 1
                 self.k += 0.1
                 self.cur_frame = (round(self.k)) % len(self.frames)
@@ -193,7 +202,7 @@ class Bird(pygame.sprite.Sprite):
     def jump(self):
         if Bird.jump_flag is True:
             Bird.up_flag = True
-            Bird.speed = -4.5
+            Bird.speed = bs[1]
             self.num = 0
 
 
@@ -278,7 +287,7 @@ while not closed:
         text_w = text.get_width()
         text_h = text.get_height()
         screen.blit(text, (text_x, text_y))
-        if score == 3 and Fon.flag:
+        if score == 10 and Fon.flag:
             Fon.image = pygame.transform.scale(load_image('bckgrd2.png'),
                                                (width * 3,
                                                 height))
