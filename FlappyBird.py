@@ -45,25 +45,9 @@ def terminate():
 
 
 def start_screen():
-    intro_text = ["Игра Flappy Bird", "",
-                  "Правила игры",
-                  "Используйте Пробел, чтобы прыгать,",
-                  "Пролетайте между колоннами и не врезайтесь!",
-                  "Нажмите любую кнопку, чтобы начать."]
-
-    fon = pygame.transform.scale(load_image('bckgrd.png'), (width * 3,
+    fon = pygame.transform.scale(load_image('start.jpg'), (width,
                                                             height))
     screen.blit(fon, (0, 0))
-    font = pygame.font.Font(None, 30)
-    text_coord = 50
-    for line in intro_text:
-        string_rendered = font.render(line, 1, pygame.Color('black'))
-        intro_rect = string_rendered.get_rect()
-        text_coord += 10
-        intro_rect.top = text_coord
-        intro_rect.x = 10
-        text_coord += intro_rect.height
-        screen.blit(string_rendered, intro_rect)
 
     while True:
         for event in pygame.event.get():
@@ -294,7 +278,7 @@ while not closed:
         text_w = text.get_width()
         text_h = text.get_height()
         screen.blit(text, (text_x, text_y))
-        if score == 70 and Fon.flag:
+        if score == 3 and Fon.flag:
             Fon.image = pygame.transform.scale(load_image('bckgrd2.png'),
                                                (width * 3,
                                                 height))
