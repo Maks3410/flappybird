@@ -19,7 +19,7 @@ btns = pygame.sprite.Group()
 running = True
 con = sqlite3.connect("flappybird.db")
 cur = con.cursor()
-pygame.mixer.music.load('data/AlanWalkerFaded.mp3')
+pygame.mixer.music.load('data/Summertime.mp3')
 pygame.mixer.music.play(-1)
 pygame.mixer.music.set_volume(0.1)
 
@@ -124,8 +124,9 @@ def end_screen():
 
 class Fon(pygame.sprite.Sprite):
     image = pygame.transform.scale(load_image('bckgrd.png'), (width * 3,
-                                                              height))
+                                                               height))
     speed = 1
+    flag = True
 
     def __init__(self, group):
         super().__init__(group)
@@ -134,6 +135,26 @@ class Fon(pygame.sprite.Sprite):
         self.rect.x, self.rect.y = 0, 0
 
     def update(self):
+        self.rect.x -= Fon.speed
+        if self.rect.x == -width * 2:
+            self.rect.x = 0
+
+
+class NightFon(pygame.sprite.Sprite):
+    image = pygame.transform.scale(load_image('bckgrd2.png'), (width * 3,
+                                                               height))
+    speed = 1
+    flag = True
+
+    def __init__(self, group):
+        super().__init__(group)
+        self.image = Fon.image
+        self.rect = self.image.get_rect()
+        self.rect.x, self.rect.y = 0, height
+
+    def update(self):
+        if self.rect.y > 0:
+            self.rect.y -= 1
         self.rect.x -= Fon.speed
         if self.rect.x == -width * 2:
             self.rect.x = 0
@@ -217,6 +238,14 @@ class Column(pygame.sprite.Sprite):
 
 def reset():
     global player, fon, cls, bird, back, cl, score
+    Fon.image = pygame.transform.scale(load_image('bckgrd.png'),
+                                       (width * 3,
+                                        height))
+    if Fon.flag is False:
+        pygame.mixer.music.load('data/Summertime.mp3')
+        pygame.mixer.music.play(-1)
+        pygame.mixer.music.set_volume(0.1)
+    Fon.flag = True
     player = pygame.sprite.Group()
     fon = pygame.sprite.Group()
     cls = pygame.sprite.Group()
@@ -265,6 +294,15 @@ while not closed:
         text_w = text.get_width()
         text_h = text.get_height()
         screen.blit(text, (text_x, text_y))
+        if score == 70 and Fon.flag:
+            Fon.image = pygame.transform.scale(load_image('bckgrd2.png'),
+                                               (width * 3,
+                                                height))
+            back = NightFon(fon)
+            Fon.flag = False
+            pygame.mixer.music.load('data/AlanWalkerFaded.mp3')
+            pygame.mixer.music.play(-1)
+            pygame.mixer.music.set_volume(0.1)
         pygame.display.flip()
         clock.tick(75)
 
