@@ -23,6 +23,7 @@ pygame.mixer.music.load('data/Summertime.mp3')
 pygame.mixer.music.play(-1)
 pygame.mixer.music.set_volume(0.1)
 bs = []
+flag = True
 
 
 def load_image(name):
@@ -59,13 +60,16 @@ def start_screen():
                 if event.key == pygame.K_ESCAPE:
                     terminate()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.pos[0] > 285 and event.pos[1] > 180 and event.pos[0] < 415 and event.pos[1] < 215:
+                if event.pos[0] > 285 and event.pos[1] > 180 and event.pos[
+                        0] < 415 and event.pos[1] < 215:
                     bs = (0.1, -3.5)
                     return
-                elif event.pos[0] > 285 and event.pos[1] > 230 and event.pos[0] < 415 and event.pos[1] < 270:
+                elif event.pos[0] > 285 and event.pos[1] > 230 and event.pos[
+                        0] < 415 and event.pos[1] < 270:
                     bs = (0.15, -4.5)
                     return
-                elif event.pos[0] > 285 and event.pos[1] > 280 and event.pos[0] < 415 and event.pos[1] < 320:
+                elif event.pos[0] > 285 and event.pos[1] > 280 and event.pos[
+                        0] < 415 and event.pos[1] < 320:
                     bs = (0.3, -6.6)
                     return
         pygame.display.flip()
@@ -119,7 +123,6 @@ class Fon(pygame.sprite.Sprite):
     image = pygame.transform.scale(load_image('bckgrd.png'), (width * 3,
                                                               height))
     speed = 1
-    flag = True
 
     def __init__(self, group):
         super().__init__(group)
@@ -137,11 +140,10 @@ class NightFon(pygame.sprite.Sprite):
     image = pygame.transform.scale(load_image('bckgrd2.png'), (width * 3,
                                                                height))
     speed = 1
-    flag = True
 
     def __init__(self, group):
         super().__init__(group)
-        self.image = Fon.image
+        self.image = NightFon.image
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = 0, height
 
@@ -234,11 +236,6 @@ def reset():
     Fon.image = pygame.transform.scale(load_image('bckgrd.png'),
                                        (width * 3,
                                         height))
-    if Fon.flag is False:
-        pygame.mixer.music.load('data/Summertime.mp3')
-        pygame.mixer.music.play(-1)
-        pygame.mixer.music.set_volume(0.1)
-    Fon.flag = True
     player = pygame.sprite.Group()
     fon = pygame.sprite.Group()
     cls = pygame.sprite.Group()
@@ -287,15 +284,26 @@ while not closed:
         text_w = text.get_width()
         text_h = text.get_height()
         screen.blit(text, (text_x, text_y))
-        if score == 10 and Fon.flag:
-            Fon.image = pygame.transform.scale(load_image('bckgrd2.png'),
+        if score % 20 == 0 and score > 1 and flag:
+            Fon.image = pygame.transform.scale(load_image('bckgrd.png'),
                                                (width * 3,
                                                 height))
+            back = Fon(fon)
+            flag = False
+            pygame.mixer.music.load('data/Summertime.mp3')
+            pygame.mixer.music.play(-1)
+            pygame.mixer.music.set_volume(0.1)
+        elif score % 10 == 0 and score > 1 and flag:
+            NightFon.image = pygame.transform.scale(load_image('bckgrd2.png'),
+                                                    (width * 3,
+                                                     height))
             back = NightFon(fon)
-            Fon.flag = False
+            flag = False
             pygame.mixer.music.load('data/AlanWalkerFaded.mp3')
             pygame.mixer.music.play(-1)
             pygame.mixer.music.set_volume(0.1)
+        elif score % 5 == 0 and score % 10 != 0:
+            flag = True
         pygame.display.flip()
         clock.tick(75)
 
