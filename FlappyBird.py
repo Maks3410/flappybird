@@ -70,7 +70,7 @@ def start_screen():
                     return
                 elif event.pos[0] > 285 and event.pos[1] > 280 and event.pos[
                         0] < 415 and event.pos[1] < 320:
-                    bs = (0.3, -6.6)
+                    bs = (0.3, -6.5)
                     return
         pygame.display.flip()
         clock.tick(FPS)
@@ -232,7 +232,7 @@ class Column(pygame.sprite.Sprite):
 
 
 def reset():
-    global player, fon, cls, bird, back, cl, score
+    global player, fon, cls, bird, back, cl, score, flag
     Fon.image = pygame.transform.scale(load_image('bckgrd.png'),
                                        (width * 3,
                                         height))
@@ -247,6 +247,7 @@ def reset():
     Bird.speed = 1
     Column.speed = 2
     score = 0
+    flag = True
     Bird.jump_flag = True
 
 
@@ -254,7 +255,6 @@ font = pygame.font.Font(None, 40)
 
 start_screen()
 closed = False
-
 while not closed:
     reset()
 
@@ -285,10 +285,10 @@ while not closed:
         text_h = text.get_height()
         screen.blit(text, (text_x, text_y))
         if score % 20 == 0 and score > 1 and flag:
-            Fon.image = pygame.transform.scale(load_image('bckgrd.png'),
+            NightFon.image = pygame.transform.scale(load_image('bckgrd.png'),
                                                (width * 3,
                                                 height))
-            back = Fon(fon)
+            back = NightFon(fon)
             flag = False
             pygame.mixer.music.load('data/Summertime.mp3')
             pygame.mixer.music.play(-1)
