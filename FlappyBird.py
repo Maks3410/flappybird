@@ -61,15 +61,15 @@ def start_screen():
                     terminate()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.pos[0] > 285 and event.pos[1] > 180 and event.pos[
-                        0] < 415 and event.pos[1] < 215:
+                    0] < 415 and event.pos[1] < 215:
                     bs = (0.1, -3.5)
                     return
                 elif event.pos[0] > 285 and event.pos[1] > 230 and event.pos[
-                        0] < 415 and event.pos[1] < 270:
+                    0] < 415 and event.pos[1] < 270:
                     bs = (0.15, -4.5)
                     return
                 elif event.pos[0] > 285 and event.pos[1] > 280 and event.pos[
-                        0] < 415 and event.pos[1] < 320:
+                    0] < 415 and event.pos[1] < 320:
                     bs = (0.3, -6.5)
                     return
         pygame.display.flip()
@@ -84,15 +84,20 @@ def end_screen():
         x.kill()
     restart_btn = pygame.sprite.Sprite(btns)
     leave_btn = pygame.sprite.Sprite(btns)
+    menu_btn = pygame.sprite.Sprite(btns)
 
     restart_btn.image = load_image('restart.png')
     leave_btn.image = load_image('leave.png')
+    menu_btn.image = load_image('menu.png')
     restart_btn.rect = restart_btn.image.get_rect()
     leave_btn.rect = leave_btn.image.get_rect()
-    restart_btn.rect.x = 420
+    menu_btn.rect = menu_btn.image.get_rect()
+    restart_btn.rect.x = 280
     restart_btn.rect.y = 12
     leave_btn.rect.x = 560
     leave_btn.rect.y = 12
+    menu_btn.rect.x = 420
+    menu_btn.rect.y = 12
 
     btns.draw(screen)
 
@@ -108,10 +113,15 @@ def end_screen():
                     terminate()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    if (420 <= event.pos[0] <= 548) and \
+                    if (280 <= event.pos[0] <= 408) and \
                             (12 <= event.pos[1] <= 50):
                         running = True
                         return
+                    if (420 <= event.pos[0] <= 548) and \
+                            (12 <= event.pos[1] <= 50):
+                        running = True
+                        start_screen()
+                        cycle()
                     elif (560 <= event.pos[0] <= 688) and \
                             (12 <= event.pos[1] <= 50):
                         terminate()
@@ -255,58 +265,66 @@ font = pygame.font.Font(None, 40)
 
 start_screen()
 closed = False
-while not closed:
-    reset()
 
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                terminate()
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    bird.jump()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    bird.jump()
-        screen.fill(pygame.Color('black'))
-        if cl.rect.x < width / 2 - 130:
-            cl = Column(cls)
-            score += 1
-        fon.update()
-        fon.draw(screen)
-        player.update()
-        player.draw(screen)
-        cls.update()
-        cls.draw(screen)
-        text = font.render("Score: {}".format(score), 1, (0, 0, 0))
-        text_x = 12
-        text_y = 12
-        text_w = text.get_width()
-        text_h = text.get_height()
-        screen.blit(text, (text_x, text_y))
-        if score % 20 == 0 and score > 1 and flag:
-            NightFon.image = pygame.transform.scale(load_image('bckgrd.png'),
-                                               (width * 3,
-                                                height))
-            back = NightFon(fon)
-            flag = False
-            pygame.mixer.music.load('data/Summertime.mp3')
-            pygame.mixer.music.play(-1)
-            pygame.mixer.music.set_volume(0.1)
-        elif score % 10 == 0 and score > 1 and flag:
-            NightFon.image = pygame.transform.scale(load_image('bckgrd2.png'),
-                                                    (width * 3,
-                                                     height))
-            back = NightFon(fon)
-            flag = False
-            pygame.mixer.music.load('data/AlanWalkerFaded.mp3')
-            pygame.mixer.music.play(-1)
-            pygame.mixer.music.set_volume(0.1)
-        elif score % 5 == 0 and score % 10 != 0:
-            flag = True
-        pygame.display.flip()
-        clock.tick(75)
 
-    end_screen()
+def cycle():
+    global score, cl, flag, back, text_w, text_h
+    while not closed:
+        reset()
 
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    terminate()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        bird.jump()
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        bird.jump()
+            screen.fill(pygame.Color('black'))
+            if cl.rect.x < width / 2 - 130:
+                cl = Column(cls)
+                score += 1
+            fon.update()
+            fon.draw(screen)
+            player.update()
+            player.draw(screen)
+            cls.update()
+            cls.draw(screen)
+            text = font.render("Score: {}".format(score), 1, (0, 0, 0))
+            text_x = 12
+            text_y = 12
+            text_w = text.get_width()
+            text_h = text.get_height()
+            screen.blit(text, (text_x, text_y))
+            if score % 20 == 0 and score > 1 and flag:
+                NightFon.image = pygame.transform.scale(
+                    load_image('bckgrd.png'),
+                    (width * 3,
+                     height))
+                back = NightFon(fon)
+                flag = False
+                pygame.mixer.music.load('data/Summertime.mp3')
+                pygame.mixer.music.play(-1)
+                pygame.mixer.music.set_volume(0.1)
+            elif score % 10 == 0 and score > 1 and flag:
+                NightFon.image = pygame.transform.scale(
+                    load_image('bckgrd2.png'),
+                    (width * 3,
+                     height))
+                back = NightFon(fon)
+                flag = False
+                pygame.mixer.music.load('data/AlanWalkerFaded.mp3')
+                pygame.mixer.music.play(-1)
+                pygame.mixer.music.set_volume(0.1)
+            elif score % 5 == 0 and score % 10 != 0:
+                flag = True
+            pygame.display.flip()
+            clock.tick(75)
+
+        end_screen()
+
+
+cycle()
 terminate()
