@@ -61,24 +61,106 @@ def start_screen():
                     terminate()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.pos[0] > 285 and event.pos[1] > 180 and event.pos[
-                    0] < 415 and event.pos[1] < 215:
-                    bs = (0.1, -3.5)
+                        0] < 415 and event.pos[1] < 215:
+                    bs = (0.1, -3.5, 'easy')
                     return
                 elif event.pos[0] > 285 and event.pos[1] > 230 and event.pos[
-                    0] < 415 and event.pos[1] < 270:
-                    bs = (0.15, -4.5)
+                        0] < 415 and event.pos[1] < 270:
+                    bs = (0.15, -4.5, 'medium')
                     return
                 elif event.pos[0] > 285 and event.pos[1] > 280 and event.pos[
-                    0] < 415 and event.pos[1] < 320:
-                    bs = (0.3, -6.5)
+                        0] < 415 and event.pos[1] < 320:
+                    bs = (0.3, -6.5, 'hard')
                     return
+                elif event.pos[0] > 285 and event.pos[1] > 330 and event.pos[
+                        0] < 415 and event.pos[1] < 370:
+                    records()
+        pygame.display.flip()
+        clock.tick(FPS)
+
+
+def records():
+    global running
+    fon = pygame.transform.scale(load_image('records_fon.png'), (width,
+                                                                 height))
+    screen.blit(fon, (0, 0))
+
+    menu = pygame.sprite.Group()
+    menu_btn = pygame.sprite.Sprite(menu)
+    menu_btn.image = load_image('menu.png')
+    menu_btn.rect = menu_btn.image.get_rect()
+    menu_btn.rect.x = 560
+    menu_btn.rect.y = 12
+    menu.draw(screen)
+
+    font = pygame.font.Font(None, 40)
+
+    text_easy = font.render('Easy:', 1, (255, 255, 255))
+    text_x = 100
+    text_y = 125
+    screen.blit(text_easy, (text_x, text_y))
+
+    text_medium = font.render('Medium:', 1, (255, 255, 255))
+    text2_x = 300
+    text2_y = 125
+    screen.blit(text_medium, (text2_x, text2_y))
+
+    text_hard = font.render('Hard:', 1, (255, 255, 255))
+    text3_x = 525
+    text3_y = 125
+    screen.blit(text_hard, (text3_x, text3_y))
+
+    easy = sorted(cur.execute("""SELECT score from score
+                          where level = 'easy'""").fetchall())
+    medium = sorted(cur.execute("""SELECT score from score
+                            where level = 'medium'""").fetchall())
+    hard = sorted(cur.execute("""SELECT score from score
+                          where level = 'hard'""").fetchall())
+
+    for i in range(1, 4):
+        x1, x2, x3 = 100, 300, 525
+        y = 175
+        if i == 1:
+            for j in range(1, 4):
+                text = font.render('{}) {}'.format(j, easy[-j][0]), 1,
+                                   (255, 255, 255))
+                screen.blit(text, (x1, y + (j - 1) * 50))
+        elif i == 2:
+            for j in range(1, 4):
+                text = font.render('{}) {}'.format(j, medium[-j][0]), 1,
+                                   (255, 255, 255))
+                screen.blit(text, (x2, y + (j - 1) * 50))
+        elif i == 3:
+            for j in range(1, 4):
+                text = font.render('{}) {}'.format(j, hard[-j][0]), 1,
+                                   (255, 255, 255))
+                screen.blit(text, (x3, y + (j - 1) * 50))
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_r:
+                    running = True
+                    return
+                elif event.key == pygame.K_ESCAPE:
+                    terminate()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    if (560 <= event.pos[0] <= 688) and \
+                            (12 <= event.pos[1] <= 50):
+                        running = True
+                        start_screen()
+                        return
         pygame.display.flip()
         clock.tick(FPS)
 
 
 def end_screen():
     global running
-    cur.execute("""INSERT INTO score(score) VALUES(?)""", ([score]))
+    cur.execute("""INSERT INTO score(level, score) VALUES(?, ?)""",
+                (bs[2], score))
     con.commit()
     for x in btns:
         x.kill()
@@ -246,6 +328,10 @@ def reset():
     Fon.image = pygame.transform.scale(load_image('bckgrd.png'),
                                        (width * 3,
                                         height))
+    if flag is False:
+        pygame.mixer.music.load('data/Summertime.mp3')
+        pygame.mixer.music.play(-1)
+        pygame.mixer.music.set_volume(0.1)
     player = pygame.sprite.Group()
     fon = pygame.sprite.Group()
     cls = pygame.sprite.Group()
@@ -298,7 +384,7 @@ def cycle():
             text_w = text.get_width()
             text_h = text.get_height()
             screen.blit(text, (text_x, text_y))
-            if score % 20 == 0 and score > 1 and flag:
+            if score % 40 == 0 and score > 1 and flag:
                 NightFon.image = pygame.transform.scale(
                     load_image('bckgrd.png'),
                     (width * 3,
@@ -308,7 +394,7 @@ def cycle():
                 pygame.mixer.music.load('data/Summertime.mp3')
                 pygame.mixer.music.play(-1)
                 pygame.mixer.music.set_volume(0.1)
-            elif score % 10 == 0 and score > 1 and flag:
+            elif score % 20 == 0 and score > 1 and flag:
                 NightFon.image = pygame.transform.scale(
                     load_image('bckgrd2.png'),
                     (width * 3,
@@ -318,7 +404,7 @@ def cycle():
                 pygame.mixer.music.load('data/AlanWalkerFaded.mp3')
                 pygame.mixer.music.play(-1)
                 pygame.mixer.music.set_volume(0.1)
-            elif score % 5 == 0 and score % 10 != 0:
+            elif str(score)[-1] == 9:
                 flag = True
             pygame.display.flip()
             clock.tick(75)
